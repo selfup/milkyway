@@ -21,9 +21,7 @@ describe('milkyway exists', function () {
         mw.appendEvent(event,
           `<h1>omg: ${this.star.count}</h1>`
         )
-        console.log(this.star.idea.title);
         this.star.idea.title = `WOW ${this.star.count}`
-        console.log(this.star.idea.title);
         this.star.ideas.push(this.star.idea)
         mw.updateState(this)
       }
