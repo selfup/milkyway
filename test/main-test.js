@@ -3,7 +3,7 @@ const assert   = chai.assert
 const mw = require('../lib/main')
 
 describe('milkyway exists', function () {
-  it('does not shit the bed', () => {
+  it('can append a component to the DOM and add event listeners', () => {
     // create component
     mw.createSystem(class IdeasComponent {
       constructor() {
