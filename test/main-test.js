@@ -18,8 +18,7 @@ describe('milkyway exists', function () {
 
       handleTitleInput() {
         this.star.count += 1
-        mw.appendEvent(
-          event,
+        mw.appendEvent(event,
           `<h1>omg: ${this.star.count}</h1>`
         )
         this.star.idea.title = `WOW ${this.star.count}`
