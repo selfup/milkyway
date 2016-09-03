@@ -19,10 +19,10 @@ mw.createSystem(class IdeasComponent {
       idea: {},
       ideas: []
     }
-    this.handleTitleInput = this.handleTitleInput.bind(this)
+    this.handleButtonClick = this.handleButtonClick.bind(this)
   }
 
-  handleTitleInput() {
+  handleButtonClick() {
     this.star.count += 1
     mw.appendEvent(event,
       `<h1>omg: ${this.star.count}</h1>`
@@ -37,7 +37,7 @@ mw.createSystem(class IdeasComponent {
         <button
           id="button"
           name="title"
-          onclick="mw.s.ideas.handleTitleInput()"
+          onclick="mw.s.ideas.handleButtonClick()"
         >
           CLICK ME
         </button>

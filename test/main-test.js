@@ -13,16 +13,19 @@ describe('milkyway exists', function () {
           idea: {},
           ideas: []
         }
-        this.handleTitleInput = this.handleTitleInput.bind(this)
+        this.handleButtonClick = this.handleButtonClick.bind(this)
       }
 
-      handleTitleInput() {
+      handleButtonClick() {
         this.star.count += 1
         mw.appendEvent(event,
           `<h1>omg: ${this.star.count}</h1>`
         )
+        console.log(this.star.idea.title);
         this.star.idea.title = `WOW ${this.star.count}`
+        console.log(this.star.idea.title);
         this.star.ideas.push(this.star.idea)
+        mw.updateState(this)
       }
 
       template() {
@@ -31,16 +34,22 @@ describe('milkyway exists', function () {
             <button
               id="button"
               name="title"
-              onclick="mw.s.ideas.handleTitleInput()"
+              onclick="mw.s.ideas.handleButtonClick()"
             >
               CLICK ME
             </button>
+          </section>
+          <section id="ideas">
+            ${this.star.ideas.map(idea => {
+              return `<article><h3><em>${idea.title}</em></h3></article>`
+            }).join('')}
           </section>
         `)
       }
     })
 
+    localStorage.clear()
     assert.equal(mw.solarSystems.ideas.componentTag, 'ideas')
-    assert.deepEqual(mw.solarSystems.ideas.star, {idea: {}, ideas: []})
+    assert.deepEqual(mw.solarSystems.ideas.star, {count: 0, idea: {}, ideas: []})
   })
 })
