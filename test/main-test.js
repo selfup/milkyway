@@ -8,24 +8,35 @@ describe('milkyway exists', function () {
     mw.createSystem(class IdeasComponent {
       constructor() {
         this.componentTag = 'ideas'
+        this.handleButtonClick = this.handleButtonClick.bind(this)
+        this.handleClearIdeas = this.handleClearIdeas.bind(this)
         this.star = {
           count: 0,
           ideas: []
         }
-        this.handleButtonClick = this.handleButtonClick.bind(this)
       }
+
+      // get init() {
+      //   return {
+      //     count: 0,
+      //     ideas: []
+      //   }
+      // }
 
       handleButtonClick() {
         this.star.count += 1
-        mw.appendEvent(event,
-          `<h1>omg: ${this.star.count}</h1>`
-        )
         const newIdea = {title: `WOW ${this.star.count}`}
         this.star.ideas.push(newIdea)
         mw.updateState(this)
       }
 
-      template() {
+      handleClearIdeas() {
+        this.star.count = 0
+        this.star.ideas = []
+        mw.updateState(this)
+      }
+
+      get template() {
         return (`
           <section>
             <button
@@ -35,9 +46,15 @@ describe('milkyway exists', function () {
             >
               CLICK ME
             </button>
+            <button
+              id="clear-ideas"
+              name="clear"
+              onclick="mw.s.ideas.handleClearIdeas()"
+            >
+             CLEAR
+            </button>
           </section>
           <section id="ideas">
-            ${console.log(this.star.ideas)}
             ${this.star.ideas.map(idea => {
               return `<article><h3><em>${idea.title}</em></h3></article>`
             }).join('')}
@@ -46,8 +63,8 @@ describe('milkyway exists', function () {
       }
     })
 
-    localStorage.clear()
+    // localStorage.clear()
     assert.equal(mw.solarSystems.ideas.componentTag, 'ideas')
-    assert.deepEqual(mw.solarSystems.ideas.star, {count: 0, idea: {}, ideas: []})
+    assert.deepEqual(mw.solarSystems.ideas.star, {count: 0, ideas: []})
   })
 })
