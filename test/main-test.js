@@ -10,7 +10,6 @@ describe('milkyway exists', function () {
         this.componentTag = 'ideas'
         this.star = {
           count: 0,
-          idea: {},
           ideas: []
         }
         this.handleButtonClick = this.handleButtonClick.bind(this)
@@ -21,8 +20,8 @@ describe('milkyway exists', function () {
         mw.appendEvent(event,
           `<h1>omg: ${this.star.count}</h1>`
         )
-        this.star.idea.title = `WOW ${this.star.count}`
-        this.star.ideas.push(this.star.idea)
+        const newIdea = {title: `WOW ${this.star.count}`}
+        this.star.ideas.push(newIdea)
         mw.updateState(this)
       }
 
@@ -38,6 +37,7 @@ describe('milkyway exists', function () {
             </button>
           </section>
           <section id="ideas">
+            ${console.log(this.star.ideas)}
             ${this.star.ideas.map(idea => {
               return `<article><h3><em>${idea.title}</em></h3></article>`
             }).join('')}
