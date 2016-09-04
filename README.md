@@ -32,7 +32,7 @@ mw.createSystem(class IdeasComponent {
   init() {
     const local = mw.s.ideas
     if (local) return local.star
-    return {ideas: []}
+    return {title: '', body: '', ideas: []}
   }
 
   loadIdeas() {
