@@ -8,30 +8,55 @@ describe('milkyway exists', function () {
     mw.createSystem(class IdeasComponent {
       constructor() {
         this.componentTag = 'ideas'
-        this.handleButtonClick = this.handleButtonClick.bind(this)
+        // remove init function and define 'this.star' to dictate simple state
+
+        // this.star = {
+        //   title: '',
+        //   body: '',
+        //   ideas: []
+        // }
+        this.handleSubmit     = this.handleSubmit.bind(this)
+        this.handleTitleInput = this.handleTitleInput.bind(this)
+        this.handleBodyInput  = this.handleBodyInput.bind(this)
         this.handleClearIdeas = this.handleClearIdeas.bind(this)
-        this.star = {
-          count: 0,
-          ideas: []
-        }
+        this.loadIdeas        = this.loadIdeas.bind(this)
       }
 
-      // get init() {
-      //   return {
-      //     count: 0,
-      //     ideas: []
-      //   }
-      // }
+      // this could return an ajax call, but here we pull from local storage
+      // this local storage gets stored in the window, so we pull it from 'mw.s.ideas'
+      // this framework handles all the nasty work for you!
+      init() {
+        const local = mw.s.ideas
+        if (local) return local.star
+        return {ideas: []}
+      }
 
-      handleButtonClick() {
-        this.star.count += 1
-        const newIdea = {title: `WOW ${this.star.count}`}
+      loadIdeas() {
+        return this.star.ideas.map(idea => {
+          return (`
+            <article>
+              <h3>${idea.title}</h3>
+              <h2>${idea.body}</h2>
+            </article>
+          `)
+        }).join('')
+      }
+
+      handleTitleInput(value) {
+        this.star.title = value
+      }
+
+      handleBodyInput(value) {
+        this.star.body = value
+      }
+
+      handleSubmit() {
+        const newIdea = {title: this.star.title, body: this.star.body}
         this.star.ideas.push(newIdea)
         mw.updateState(this)
       }
 
       handleClearIdeas() {
-        this.star.count = 0
         this.star.ideas = []
         mw.updateState(this)
       }
@@ -39,31 +64,34 @@ describe('milkyway exists', function () {
       get template() {
         return (`
           <section>
-            <button
-              id="button"
+            <br><br>
+            <input
               name="title"
-              onclick="mw.s.ideas.handleButtonClick()"
+              onchange="mw.s.ideas.handleTitleInput(this.value)"
+            ><br><br>
+            <input
+              name="body"
+              onchange="mw.s.ideas.handleBodyInput(this.value)"
             >
-              CLICK ME
+            <button
+              onclick="mw.s.ideas.handleSubmit()"
+            >
+              Submit
             </button>
             <button
-              id="clear-ideas"
-              name="clear"
               onclick="mw.s.ideas.handleClearIdeas()"
             >
-             CLEAR
+             Clear Ideas
             </button>
           </section>
           <section id="ideas">
-            ${this.star.ideas.map(idea => {
-              return `<article><h3><em>${idea.title}</em></h3></article>`
-            }).join('')}
+            ${mw.s.ideas.loadIdeas()}
           </section>
         `)
       }
     })
 
-    // localStorage.clear()
+    localStorage.clear()
     assert.equal(mw.solarSystems.ideas.componentTag, 'ideas')
     assert.deepEqual(mw.solarSystems.ideas.star, {count: 0, ideas: []})
   })
