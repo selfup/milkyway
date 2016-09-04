@@ -1,35 +1,21 @@
-const chai     = require('chai')
-const assert   = chai.assert
-const mw = require('../lib/main')
+const chai   = require('chai')
+const assert = chai.assert
+const MW     = require('../lib/main')
 
 describe('milkyway exists', function () {
-  it('can append a component to the DOM and add event listeners', () => {
+  it('can pass data from one component to another and only render a specific component', () => {
     // create component
-    mw.createSystem(class IdeasComponent {
+    MW.createSystem(class IdeasComponent {
       constructor() {
-        this.componentTag = 'ideas'
+        this.componentTag     = 'ideas'
         this.handleSubmit     = this.handleSubmit.bind(this)
         this.handleTitleInput = this.handleTitleInput.bind(this)
         this.handleBodyInput  = this.handleBodyInput.bind(this)
         this.handleClearIdeas = this.handleClearIdeas.bind(this)
-        this.loadIdeas        = this.loadIdeas.bind(this)
       }
 
       init() {
-        const local = mw.s.ideas
-        if (local) return local.star
-        return {title: '', body: '', ideas: []}
-      }
-
-      loadIdeas() {
-        return this.star.ideas.map(idea => {
-          return (`
-            <article>
-              <h3>${idea.title}</h3>
-              <h2>${idea.body}</h2>
-            </article>
-          `)
-        }).join('')
+        return {title: '', body: ''}
       }
 
       handleTitleInput(value) {
@@ -42,8 +28,8 @@ describe('milkyway exists', function () {
 
       handleSubmit() {
         const newIdea = {title: this.star.title, body: this.star.body}
-        this.star.ideas.push(newIdea)
-        mw.updateState(this)
+        mw.s.idealoader.star.ideas.push(newIdea)
+        mw.updateState(mw.s.idealoader)
       }
 
       handleClearIdeas() {
@@ -75,16 +61,51 @@ describe('milkyway exists', function () {
             >
              Clear Ideas
             </button>
+            <idealoader></idealoader>
           </section>
-          <section id="ideas">
-            ${mw.s.ideas.loadIdeas()}
+
+        `)
+      }
+    })
+
+    // create ideaLoader
+    MW.createSystem(class IdeasLoader {
+      constructor() {
+        this.componentTag = 'idealoader'
+        this.loadIdeas = this.loadIdeas.bind(this)
+      }
+
+      init() {
+        const local = mw.s.idealoader
+        if (local) return local.star
+        return {ideas: []}
+      }
+
+      loadIdeas() {
+        return this.star.ideas.map(idea => {
+          return (`
+            <article>
+              <h3>Title:</h3>
+              <h4>${idea.title}</h4>
+              <h3>Body:</h3>
+              <h4>${idea.body}</h4>
+            </article>
+          `)
+        }).join('')
+      }
+
+      get template() {
+        return (`
+          <section>
+            ${mw.s.idealoader.loadIdeas()}
           </section>
         `)
       }
     })
 
     localStorage.clear()
-    assert.equal(mw.solarSystems.ideas.componentTag, 'ideas')
-    assert.deepEqual(mw.solarSystems.ideas.star, { title: '', body: '', ideas: [] })
+    assert.equal(MW.solarSystems.ideas.componentTag, 'ideas')
+    assert.deepEqual(MW.solarSystems.ideas.star, { title: '', body: ''})
+    assert.deepEqual(MW.solarSystems.idealoader.star, { ideas: []})
   })
 })
