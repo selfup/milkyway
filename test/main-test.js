@@ -58,11 +58,13 @@ describe('milkyway exists', function () {
             <input
               name="title"
               onchange="mw.s.ideas.handleTitleInput(this.value)"
-            ><br><br>
+            >
+            <br><br>
             <input
               name="body"
               onchange="mw.s.ideas.handleBodyInput(this.value)"
             >
+            <br><br>
             <button
               onclick="mw.s.ideas.handleSubmit()"
             >
