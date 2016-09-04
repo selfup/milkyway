@@ -18,7 +18,7 @@ describe('milkyway exists', function () {
       init() {
         const local = mw.s.ideas
         if (local) return local.star
-        return {ideas: []}
+        return {title: '', body: '', ideas: []}
       }
 
       loadIdeas() {
@@ -83,6 +83,6 @@ describe('milkyway exists', function () {
 
     localStorage.clear()
     assert.equal(mw.solarSystems.ideas.componentTag, 'ideas')
-    assert.deepEqual(mw.solarSystems.ideas.star, {count: 0, ideas: []})
+    assert.deepEqual(mw.solarSystems.ideas.star, { title: '', body: '', ideas: [] })
   })
 })
