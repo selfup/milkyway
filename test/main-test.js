@@ -5,7 +5,7 @@ const MW     = require('../lib/main')
 describe('milkyway exists', function () {
   it('can pass data from one component to another and only render a specific component', () => {
     // create component
-    MW.createSystem(class IdeasComponent {
+    MW.createSystem(class App {
       constructor() {
         this.componentTag     = 'ideas'
         this.handleSubmit     = this.handleSubmit.bind(this)
@@ -28,8 +28,15 @@ describe('milkyway exists', function () {
 
       handleSubmit() {
         const newIdea = {title: this.star.title, body: this.star.body}
-        mw.s.idealoader.star.ideas.push(newIdea)
+        mw.s.idealoader.star.ideas.unshift(newIdea)
+        this.clearInputs()
         mw.updateState(mw.s.idealoader)
+      }
+
+      clearInputs() {
+        this.star.title = ''
+        this.star.body = ''
+        mw.updateState(this)
       }
 
       handleClearIdeas() {
@@ -69,7 +76,7 @@ describe('milkyway exists', function () {
     })
 
     // create ideaLoader
-    MW.createSystem(class IdeasLoader {
+    MW.createSystem(class Ideas {
       constructor() {
         this.componentTag = 'idealoader'
         this.loadIdeas = this.loadIdeas.bind(this)

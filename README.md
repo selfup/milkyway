@@ -10,44 +10,22 @@ This framework is very similar to React at first glance.
 
 This is more of a deep dive/learning experience, but feel free to make a Pull Request/Merge Request!
 
-### How to write a basic component
+### How to write a two components and only have one re-render on state change
 
 ```javascript
 const mw = require('milkyway')
 
-mw.createSystem(class IdeasComponent {
+MW.createSystem(class App {
   constructor() {
-    this.componentTag = 'ideas'
-    // define this.star to have new default values for the component state
-    // this.star = {
-    //   title: '',
-    //   body: '',
-    //   ideas: []
-    // }
+    this.componentTag     = 'ideas'
     this.handleSubmit     = this.handleSubmit.bind(this)
     this.handleTitleInput = this.handleTitleInput.bind(this)
     this.handleBodyInput  = this.handleBodyInput.bind(this)
     this.handleClearIdeas = this.handleClearIdeas.bind(this)
-    this.loadIdeas        = this.loadIdeas.bind(this)
   }
 
-  // define init to pull localStorage from 'mw.s.componentTag' (s = solarSystems)
-  // define init to have mw define the component state from an ajax call
   init() {
-    const local = mw.s.ideas
-    if (local) return local.star
-    return {title: '', body: '', ideas: []}
-  }
-
-  loadIdeas() {
-    return this.star.ideas.map(idea => {
-      return (`
-        <article>
-          <h3>${idea.title}</h3>
-          <h2>${idea.body}</h2>
-        </article>
-      `)
-    }).join('')
+    return {title: '', body: ''}
   }
 
   handleTitleInput(value) {
@@ -60,7 +38,14 @@ mw.createSystem(class IdeasComponent {
 
   handleSubmit() {
     const newIdea = {title: this.star.title, body: this.star.body}
-    this.star.ideas.push(newIdea)
+    mw.s.idealoader.star.ideas.unshift(newIdea)
+    this.clearInputs()
+    mw.updateState(mw.s.idealoader)
+  }
+
+  clearInputs() {
+    this.star.title = ''
+    this.star.body = ''
     mw.updateState(this)
   }
 
@@ -93,9 +78,43 @@ mw.createSystem(class IdeasComponent {
         >
          Clear Ideas
         </button>
+        <idealoader></idealoader>
       </section>
-      <section id="ideas">
-        ${mw.s.ideas.loadIdeas()}
+
+    `)
+  }
+})
+
+// create ideaLoader
+MW.createSystem(class Ideas {
+  constructor() {
+    this.componentTag = 'idealoader'
+    this.loadIdeas = this.loadIdeas.bind(this)
+  }
+
+  init() {
+    const local = mw.s.idealoader
+    if (local) return local.star
+    return {ideas: []}
+  }
+
+  loadIdeas() {
+    return this.star.ideas.map(idea => {
+      return (`
+        <article>
+          <h3>Title:</h3>
+          <h4>${idea.title}</h4>
+          <h3>Body:</h3>
+          <h4>${idea.body}</h4>
+        </article>
+      `)
+    }).join('')
+  }
+
+  get template() {
+    return (`
+      <section>
+        ${mw.s.idealoader.loadIdeas()}
       </section>
     `)
   }
