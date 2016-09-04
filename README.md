@@ -6,6 +6,10 @@ A Galaxy (the DOM) has many solar systems (components), and each solar system ha
 
 Kinda of a joke but serious at the same time.
 
+This framework is very similar to React at first glance.
+
+This is more of a deep dive/learning experience, but feel free to make a Pull Request/Merge Request!
+
 ### How to write a basic component
 
 ```javascript
