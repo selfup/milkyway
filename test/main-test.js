@@ -8,13 +8,6 @@ describe('milkyway exists', function () {
     mw.createSystem(class IdeasComponent {
       constructor() {
         this.componentTag = 'ideas'
-        // remove init function and define 'this.star' to dictate simple state
-
-        // this.star = {
-        //   title: '',
-        //   body: '',
-        //   ideas: []
-        // }
         this.handleSubmit     = this.handleSubmit.bind(this)
         this.handleTitleInput = this.handleTitleInput.bind(this)
         this.handleBodyInput  = this.handleBodyInput.bind(this)
@@ -22,9 +15,6 @@ describe('milkyway exists', function () {
         this.loadIdeas        = this.loadIdeas.bind(this)
       }
 
-      // this could return an ajax call, but here we pull from local storage
-      // this local storage gets stored in the window, so we pull it from 'mw.s.ideas'
-      // this framework handles all the nasty work for you!
       init() {
         const local = mw.s.ideas
         if (local) return local.star

@@ -14,8 +14,7 @@ const mw = require('milkyway')
 mw.createSystem(class IdeasComponent {
   constructor() {
     this.componentTag = 'ideas'
-    // remove init function and define 'this.star' to dictate simple state
-
+    // define this.star to have new default values for the component state
     // this.star = {
     //   title: '',
     //   body: '',
@@ -28,9 +27,8 @@ mw.createSystem(class IdeasComponent {
     this.loadIdeas        = this.loadIdeas.bind(this)
   }
 
-  // this could return an ajax call, but here we pull from local storage
-  // this local storage gets stored in the window, so we pull it from 'mw.s.ideas'
-  // this framework handles all the nasty work for you!
+  // define init to pull localStorage from 'mw.s.componentTag' (s = solarSystems)
+  // define init to have mw define that component state from an ajax call
   init() {
     const local = mw.s.ideas
     if (local) return local.star
