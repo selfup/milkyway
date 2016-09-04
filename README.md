@@ -32,7 +32,7 @@ mw.createSystem(class IdeasComponent {
   }
 
   // define init to pull localStorage from 'mw.s.componentTag' (s = solarSystems)
-  // define init to have mw define that component state from an ajax call
+  // define init to have mw define the component state from an ajax call
   init() {
     const local = mw.s.ideas
     if (local) return local.star
