@@ -1,40 +1,56 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-const LspiFlux = require("lspi-flux")
+"use strict";
 
-class Milkyway {
-  constructor() {
-    this.s = JSON.parse(localStorage.getItem('lspi-flux')) || {}
-    this.lf = new LspiFlux(this.s)
-    window.mw = this
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LspiFlux = require("lspi-flux");
+
+var Milkyway = function () {
+  function Milkyway() {
+    _classCallCheck(this, Milkyway);
+
+    this.s = JSON.parse(localStorage.getItem('lspi-flux')) || {};
+    this.lf = new LspiFlux(this.s);
+    window.mw = this;
   }
 
-  createSystem(klass) {
-    const newSystem = new klass()
-    const currentSystem = this.s[newSystem.componentTag]
-    if (newSystem.init) newSystem.star = newSystem.init()
-    if (currentSystem) newSystem.star = currentSystem.star
-    this.s[newSystem.componentTag] = newSystem
-    this.setComponentStates
-    this.render(newSystem)
-  }
+  _createClass(Milkyway, [{
+    key: "createSystem",
+    value: function createSystem(klass) {
+      var newSystem = new klass();
+      var currentSystem = this.s[newSystem.componentTag];
+      if (newSystem.init) newSystem.star = newSystem.init();
+      if (currentSystem) newSystem.star = currentSystem.star;
+      this.s[newSystem.componentTag] = newSystem;
+      this.setComponentStates;
+      this.render(newSystem);
+    }
+  }, {
+    key: "updateState",
+    value: function updateState(that) {
+      this.s[that.componentTag].star = that.star;
+      this.lf.setState(this.s);
+      this.render(that);
+    }
+  }, {
+    key: "render",
+    value: function render(that) {
+      var compTag = document.getElementsByTagName(that.componentTag)[0];
+      compTag.innerHTML = that.template;
+    }
+  }, {
+    key: "setComponentStates",
+    get: function get() {
+      this.lf.setState(this.s);
+    }
+  }]);
 
-  get setComponentStates() {
-    this.lf.setState(this.s)
-  }
+  return Milkyway;
+}();
 
-  updateState(that) {
-    this.s[that.componentTag].star = that.star
-    this.lf.setState(this.s)
-    this.render(that)
-  }
-
-  render(that) {
-    const compTag = document.getElementsByTagName(that.componentTag)[0]
-    compTag.innerHTML = that.template
-  }
-}
-
-module.exports = new Milkyway()
+module.exports = new Milkyway();
 
 },{"lspi-flux":2}],2:[function(require,module,exports){
 const ScopedLspi = require("./scoped-lspi")
