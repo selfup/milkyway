@@ -2,7 +2,7 @@
   "name": "milkyway",
   "version": "0.0.1",
   "description": "Tiny tiny Frontend view layer modeled after Vue.js and React",
-  "main": "lib/main.js",
+  "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack",
