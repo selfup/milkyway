@@ -111,8 +111,8 @@ describe('milkyway exists', function () {
     })
 
     localStorage.clear()
-    assert.equal(MW.solarSystems.ideas.componentTag, 'ideas')
-    assert.deepEqual(MW.solarSystems.ideas.star, { title: '', body: ''})
-    assert.deepEqual(MW.solarSystems.idealoader.star, { ideas: []})
+    assert.equal(MW.s.ideas.componentTag, 'ideas')
+    assert.deepEqual(MW.s.ideas.star, { title: '', body: ''})
+    assert.deepEqual(MW.s.idealoader.star, { ideas: []})
   })
 })
