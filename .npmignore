@@ -2,4 +2,6 @@ node_modules
 test
 test.html
 test.bundle.js
+main.bundle.js
 webpack.config.js
+lib

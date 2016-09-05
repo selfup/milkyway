@@ -75,65 +75,39 @@
 	  function Milkyway() {
 	    _classCallCheck(this, Milkyway);
 
-	    this.lf = new LspiFlux();
-	    this.solarSystems = this.loadSystems();
-	    this.mainState = this.fetchComponentStates;
-	    window.Milkyway = this;
-	    console.log(window.Milkyway);
+	    this.s = JSON.parse(localStorage.getItem('lspi-flux')) || {};
+	    this.lf = new LspiFlux(this.s);
+	    window.mw = this;
 	  }
 
 	  _createClass(Milkyway, [{
 	    key: "createSystem",
 	    value: function createSystem(klass) {
 	      var newSystem = new klass();
-	      this.solarSystems[newSystem.componentTag] = newSystem;
-	      window.solarSystems = this.solarSystems;
-	      this.fetchComponentStates;
-	      this.addTemplateToDOM(newSystem.componentTag, newSystem.template());
-	    }
-	  }, {
-	    key: "loadSystems",
-	    value: function loadSystems() {
-	      if (window.solarSystems) return window.solarSystems;
-	      window.solarSystems = {};
-	      return {};
+	      var currentSystem = this.s[newSystem.componentTag];
+	      if (newSystem.init) newSystem.star = newSystem.init();
+	      if (currentSystem) newSystem.star = currentSystem.star;
+	      this.s[newSystem.componentTag] = newSystem;
+	      this.setComponentStates;
+	      this.render(newSystem);
 	    }
 	  }, {
 	    key: "updateState",
 	    value: function updateState(that) {
-	      var compName = that.componentTag;
-	      var compState = that.star;
-
-	      this.mainState[compName].star = that.star;
-	      that.star = this.mainState[compName].star;
+	      this.s[that.componentTag].star = that.star;
+	      this.lf.setState(this.s);
+	      this.render(that);
 	    }
 	  }, {
-	    key: "addTemplateToDOM",
-	    value: function addTemplateToDOM(componentName, componentTemplate) {
-	      var compTag = document.getElementsByTagName(componentName)[0];
-	      compTag.innerHTML = componentTemplate;
+	    key: "render",
+	    value: function render(that) {
+	      var compTag = document.getElementsByTagName(that.componentTag)[0];
+	      compTag.innerHTML = that.template;
 	    }
 	  }, {
-	    key: "loadComponents",
-	    get: function get() {}
-	  }, {
-	    key: "fetchComponentStates",
+	    key: "setComponentStates",
 	    get: function get() {
-	      var _this = this;
-
-	      var mainState = Object.keys(this.solarSystems).map(function (solarSystem) {
-	        var system = _this.solarSystems[solarSystem];
-	        _this.lf.setState(system.star);
-	        var cpStar = _this.lf.fetchState;
-
-	        if (cpStar.status) return cpStar.state;
-	        return system.star;
-	      });
-
-	      var mainSet = this.lf.setState(mainState, 'milkyway-main');
-
-	      if (mainSet.status) return mainSet.state;
-	      return {};
+	      this.lf.setState(this.s);
 	    }
 	  }]);
 
@@ -595,41 +569,105 @@
 
 	var chai = __webpack_require__(14);
 	var assert = chai.assert;
-	var MilkyWay = __webpack_require__(1);
+	var MW = __webpack_require__(1);
 
 	describe('milkyway exists', function () {
-	  it('does not shit the bed', function () {
-
+	  it('can pass data from one component to another and only render a specific component', function () {
 	    // create component
-	    MilkyWay.createSystem(function () {
-	      function IdeasComponent() {
-	        _classCallCheck(this, IdeasComponent);
+	    MW.createSystem(function () {
+	      function App() {
+	        _classCallCheck(this, App);
 
 	        this.componentTag = 'ideas';
-	        this.star = {
-	          idea: {},
-	          ideas: []
-	        };
+	        this.handleSubmit = this.handleSubmit.bind(this);
 	        this.handleTitleInput = this.handleTitleInput.bind(this);
+	        this.handleBodyInput = this.handleBodyInput.bind(this);
+	        this.handleClearIdeas = this.handleClearIdeas.bind(this);
 	      }
 
-	      _createClass(IdeasComponent, [{
+	      _createClass(App, [{
+	        key: 'init',
+	        value: function init() {
+	          return { title: '', body: '' };
+	        }
+	      }, {
 	        key: 'handleTitleInput',
-	        value: function handleTitleInput() {
-	          console.log('wow');
+	        value: function handleTitleInput(value) {
+	          this.star.title = value;
+	        }
+	      }, {
+	        key: 'handleBodyInput',
+	        value: function handleBodyInput(value) {
+	          this.star.body = value;
+	        }
+	      }, {
+	        key: 'handleSubmit',
+	        value: function handleSubmit() {
+	          var newIdea = { title: this.star.title, body: this.star.body };
+	          mw.s.idealoader.star.ideas.unshift(newIdea);
+	          this.clearInputs();
+	          mw.updateState(mw.s.idealoader);
+	        }
+	      }, {
+	        key: 'clearInputs',
+	        value: function clearInputs() {
+	          this.star.title = '';
+	          this.star.body = '';
+	          mw.updateState(this);
+	        }
+	      }, {
+	        key: 'handleClearIdeas',
+	        value: function handleClearIdeas() {
+	          this.star.ideas = [];
+	          mw.updateState(this);
 	        }
 	      }, {
 	        key: 'template',
-	        value: function template() {
-	          return '\n          <h1>wow</h1>\n          <button\n            name="title"\n            onlick="Milkyway.solarSystems.ideas.handleTitleInput()"\n          >\n            CLICK ME\n          </button>\n          <h2>OKOKOK</h2>\n        ';
+	        get: function get() {
+	          return '\n          <section>\n            <br><br>\n            <input\n              name="title"\n              onchange="mw.s.ideas.handleTitleInput(this.value)"\n            >\n            <br><br>\n            <input\n              name="body"\n              onchange="mw.s.ideas.handleBodyInput(this.value)"\n            >\n            <br><br>\n            <button\n              onclick="mw.s.ideas.handleSubmit()"\n            >\n              Submit\n            </button>\n            <button\n              onclick="mw.s.ideas.handleClearIdeas()"\n            >\n             Clear Ideas\n            </button>\n            <idealoader></idealoader>\n          </section>\n\n        ';
 	        }
 	      }]);
 
-	      return IdeasComponent;
+	      return App;
 	    }());
 
-	    assert.equal(Milkyway.solarSystems.ideas.componentTag, 'ideas');
-	    assert.deepEqual(Milkyway.solarSystems.ideas.star, { idea: {}, ideas: [] });
+	    // create ideaLoader
+	    MW.createSystem(function () {
+	      function Ideas() {
+	        _classCallCheck(this, Ideas);
+
+	        this.componentTag = 'idealoader';
+	        this.loadIdeas = this.loadIdeas.bind(this);
+	      }
+
+	      _createClass(Ideas, [{
+	        key: 'init',
+	        value: function init() {
+	          var local = mw.s.idealoader;
+	          if (local) return local.star;
+	          return { ideas: [] };
+	        }
+	      }, {
+	        key: 'loadIdeas',
+	        value: function loadIdeas() {
+	          return this.star.ideas.map(function (idea) {
+	            return '\n            <article>\n              <h3>Title:</h3>\n              <h4>' + idea.title + '</h4>\n              <h3>Body:</h3>\n              <h4>' + idea.body + '</h4>\n            </article>\n          ';
+	          }).join('');
+	        }
+	      }, {
+	        key: 'template',
+	        get: function get() {
+	          return '\n          <section>\n            ' + mw.s.idealoader.loadIdeas() + '\n          </section>\n        ';
+	        }
+	      }]);
+
+	      return Ideas;
+	    }());
+
+	    localStorage.clear();
+	    assert.equal(MW.s.ideas.componentTag, 'ideas');
+	    assert.deepEqual(MW.s.ideas.star, { title: '', body: '' });
+	    assert.deepEqual(MW.s.idealoader.star, { ideas: [] });
 	  });
 	});
 

@@ -64,65 +64,39 @@
 	  function Milkyway() {
 	    _classCallCheck(this, Milkyway);
 
-	    this.lf = new LspiFlux();
-	    this.solarSystems = this.loadSystems();
-	    this.mainState = this.fetchComponentStates;
-	    window.Milkyway = this;
-	    console.log(window.Milkyway);
+	    this.s = JSON.parse(localStorage.getItem('lspi-flux')) || {};
+	    this.lf = new LspiFlux(this.s);
+	    window.mw = this;
 	  }
 
 	  _createClass(Milkyway, [{
 	    key: "createSystem",
 	    value: function createSystem(klass) {
 	      var newSystem = new klass();
-	      this.solarSystems[newSystem.componentTag] = newSystem;
-	      window.solarSystems = this.solarSystems;
-	      this.fetchComponentStates;
-	      this.addTemplateToDOM(newSystem.componentTag, newSystem.template());
-	    }
-	  }, {
-	    key: "loadSystems",
-	    value: function loadSystems() {
-	      if (window.solarSystems) return window.solarSystems;
-	      window.solarSystems = {};
-	      return {};
+	      var currentSystem = this.s[newSystem.componentTag];
+	      if (newSystem.init) newSystem.star = newSystem.init();
+	      if (currentSystem) newSystem.star = currentSystem.star;
+	      this.s[newSystem.componentTag] = newSystem;
+	      this.setComponentStates;
+	      this.render(newSystem);
 	    }
 	  }, {
 	    key: "updateState",
 	    value: function updateState(that) {
-	      var compName = that.componentTag;
-	      var compState = that.star;
-
-	      this.mainState[compName].star = that.star;
-	      that.star = this.mainState[compName].star;
+	      this.s[that.componentTag].star = that.star;
+	      this.lf.setState(this.s);
+	      this.render(that);
 	    }
 	  }, {
-	    key: "addTemplateToDOM",
-	    value: function addTemplateToDOM(componentName, componentTemplate) {
-	      var compTag = document.getElementsByTagName(componentName)[0];
-	      compTag.innerHTML = componentTemplate;
+	    key: "render",
+	    value: function render(that) {
+	      var compTag = document.getElementsByTagName(that.componentTag)[0];
+	      compTag.innerHTML = that.template;
 	    }
 	  }, {
-	    key: "loadComponents",
-	    get: function get() {}
-	  }, {
-	    key: "fetchComponentStates",
+	    key: "setComponentStates",
 	    get: function get() {
-	      var _this = this;
-
-	      var mainState = Object.keys(this.solarSystems).map(function (solarSystem) {
-	        var system = _this.solarSystems[solarSystem];
-	        _this.lf.setState(system.star);
-	        var cpStar = _this.lf.fetchState;
-
-	        if (cpStar.status) return cpStar.state;
-	        return system.star;
-	      });
-
-	      var mainSet = this.lf.setState(mainState, 'milkyway-main');
-
-	      if (mainSet.status) return mainSet.state;
-	      return {};
+	      this.lf.setState(this.s);
 	    }
 	  }]);
 

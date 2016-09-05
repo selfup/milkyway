@@ -2,10 +2,11 @@
   "name": "milkyway",
   "version": "0.0.1",
   "description": "Tiny tiny Frontend view layer modeled after Vue.js and React",
-  "main": "main.bundle.js",
+  "main": "lib/main.js",
   "scripts": {
     "start": "webpack-dev-server",
-    "build": "webpack"
+    "build": "webpack",
+    "package": "browserify lib/main.js -o index.js"
   },
   "repository": {
     "type": "git",
