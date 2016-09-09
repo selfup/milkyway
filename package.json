@@ -1,6 +1,6 @@
 {
   "name": "milkyway",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Tiny tiny Frontend view layer modeled after Vue.js and React",
   "main": "./lib/main.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "webpack-dev-server": "^1.15.0"
   },
   "dependencies": {
-    "lspi-flux": "^1.0.52"
+    "lspi-flux": "^1.0.53"
   },
   "keywords": [
     "flux",
