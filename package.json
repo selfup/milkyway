@@ -1,6 +1,6 @@
 {
   "name": "milkyway",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Tiny tiny Frontend view layer modeled after Vue.js and React",
   "main": "./lib/main.js",
   "scripts": {
