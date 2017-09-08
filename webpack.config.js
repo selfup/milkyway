@@ -1,21 +1,37 @@
 const path = require('path');
+const BabiliPlugin = require('babili-webpack-plugin');
+const webpack = require('webpack');
 
-module.exports = {
-  entry: {
-    main: "./lib/index.js",
-    test: "mocha!./test/index.js"
-  },
-  output: {
-    path: __dirname,
-    filename: "[name].bundle.js"
-  },
-  module: {
-    loaders: [
-      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader?presets[]=es2015' },
-      { test: /sinon\.js$/, loader: "imports?define=>false,require=>false"}
-    ]
-  },
-  resolve: {
-    extensions: ['', '.js', '.json', '.scss', 'css']
-  }
+const plugins = [
+  new webpack.optimize.ModuleConcatenationPlugin(),
+];
+
+module.exports = function webpackStuff(env) {
+  if (env === 'production') plugins.push(new BabiliPlugin());
+
+  return {
+    entry: [
+      './lib/index.js',
+    ],
+    output: {
+      filename: 'main.bundle.js',
+      path: path.resolve(__dirname, './'),
+    },
+    module: {
+      rules: [{
+        test: /\.js$/,
+        loader: 'babel-loader',
+        query: {
+          presets: [
+            'es2015',
+          ],
+          plugins: [],
+        },
+        include: [
+          path.resolve(__dirname, './'),
+        ],
+      }],
+    },
+    plugins,
+  };
 };

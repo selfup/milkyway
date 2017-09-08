@@ -13,19 +13,22 @@ This is more of a deep dive/learning experience, but feel free to make a Pull Re
 ### How to write a two components and only have one re-render on state change
 
 ```javascript
-const mw = require('milkyway')
+const MW = require('milkyway')
 
 MW.createSystem(class App {
   constructor() {
-    this.componentTag     = 'ideas'
-    this.handleSubmit     = this.handleSubmit.bind(this)
+    this.componentTag = 'Ideas'
+    this.handleSubmit = this.handleSubmit.bind(this)
     this.handleTitleInput = this.handleTitleInput.bind(this)
-    this.handleBodyInput  = this.handleBodyInput.bind(this)
+    this.handleBodyInput = this.handleBodyInput.bind(this)
     this.handleClearIdeas = this.handleClearIdeas.bind(this)
   }
 
   init() {
-    return {title: '', body: ''}
+    return {
+      title: '',
+      body: '',
+    }
   }
 
   handleTitleInput(value) {
@@ -37,10 +40,17 @@ MW.createSystem(class App {
   }
 
   handleSubmit() {
-    const newIdea = {title: this.star.title, body: this.star.body}
-    mw.s.idealoader.star.ideas.unshift(newIdea)
+    const { updateState } = mw
+    const { Idealoader } = mw.state
+
+    const newIdea = {
+      title: this.star.title,
+      body: this.star.body,
+    }
+
+    Idealoader.star.ideas.unshift(newIdea)
     this.clearInputs()
-    mw.updateState(mw.s.idealoader)
+    updateState(Idealoader)
   }
 
   clearInputs() {
@@ -50,56 +60,64 @@ MW.createSystem(class App {
   }
 
   handleClearIdeas() {
-    this.star.ideas = []
+    this.star.Ideas = []
     mw.updateState(this)
   }
 
   get template() {
+    const {
+      handleBodyInput,
+      handleClearIdeas,
+      handleSubmit,
+      handleTitleInput,
+    } = mw.state.Ideas
+
     return (`
       <section>
         <br><br>
         <input
           name="title"
-          onchange="mw.s.ideas.handleTitleInput(this.value)"
+          onchange="handleTitleInput(this.value)"
         >
         <br><br>
         <input
           name="body"
-          onchange="mw.s.ideas.handleBodyInput(this.value)"
+          onchange="handleBodyInput(this.value)"
         >
         <br><br>
         <button
-          onclick="mw.s.ideas.handleSubmit()"
+          onclick="handleSubmit()"
         >
           Submit
         </button>
         <button
-          onclick="mw.s.ideas.handleClearIdeas()"
+          onclick="handleClearIdeas()"
         >
-         Clear Ideas
+          Clear Ideas
         </button>
-        <idealoader></idealoader>
+        <Idealoader></Idealoader>
       </section>
-
     `)
   }
 })
 
-// create ideaLoader
+// create IdeaLoader
 MW.createSystem(class Ideas {
   constructor() {
-    this.componentTag = 'idealoader'
+    this.componentTag = 'Idealoader'
     this.loadIdeas = this.loadIdeas.bind(this)
   }
 
   init() {
-    const local = mw.s.idealoader
+    const local = mw.state.Idealoader
     if (local) return local.star
-    return {ideas: []}
+    return { ideas: [] }
   }
 
   loadIdeas() {
-    return this.star.ideas.map(idea => {
+    const { ideas } = this.star
+
+    return ideas.map(idea => {
       return (`
         <article>
           <h3>Title:</h3>
@@ -112,9 +130,11 @@ MW.createSystem(class Ideas {
   }
 
   get template() {
+    const { Idealoader } = mw.state
+
     return (`
       <section>
-        ${mw.s.idealoader.loadIdeas()}
+        ${Idealoader.loadIdeas()}
       </section>
     `)
   }
