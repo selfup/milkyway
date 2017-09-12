@@ -18,10 +18,13 @@ const MW = require('milkyway')
 MW.createSystem(class App {
   constructor() {
     this.componentTag = 'Ideas'
+
+    // bind
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleTitleInput = this.handleTitleInput.bind(this)
     this.handleBodyInput = this.handleBodyInput.bind(this)
     this.handleClearIdeas = this.handleClearIdeas.bind(this)
+    this.clearInputs = this.clearInputs.bind(this)
   }
 
   init() {
@@ -40,58 +43,48 @@ MW.createSystem(class App {
   }
 
   handleSubmit() {
-    const { updateState } = mw
-    const { Idealoader } = mw.state
-
     const newIdea = {
       title: this.star.title,
       body: this.star.body,
     }
 
-    Idealoader.star.ideas.unshift(newIdea)
+    MW.state.Idealoader.star.ideas.unshift(newIdea)
     this.clearInputs()
-    updateState(Idealoader)
+    MW.updateState(MW.state.Idealoader)
   }
 
   clearInputs() {
     this.star.title = ''
     this.star.body = ''
-    mw.updateState(this)
+    MW.updateState(this)
   }
 
   handleClearIdeas() {
-    this.star.Ideas = []
-    mw.updateState(this)
+    MW.state.Idealoader.star.ideas = []
+    MW.updateState(MW.state.Idealoader)
   }
 
   get template() {
-    const {
-      handleBodyInput,
-      handleClearIdeas,
-      handleSubmit,
-      handleTitleInput,
-    } = mw.state.Ideas
-
     return (`
       <section>
         <br><br>
         <input
           name="title"
-          onchange="handleTitleInput(this.value)"
+          onchange="MW.state.Ideas.handleTitleInput(this.value)"
         >
         <br><br>
         <input
           name="body"
-          onchange="handleBodyInput(this.value)"
+          onchange="MW.state.Ideas.handleBodyInput(this.value)"
         >
         <br><br>
         <button
-          onclick="handleSubmit()"
+          onclick="MW.state.Ideas.handleSubmit()"
         >
           Submit
         </button>
         <button
-          onclick="handleClearIdeas()"
+          onclick="MW.state.Ideas.handleClearIdeas()"
         >
           Clear Ideas
         </button>
@@ -105,36 +98,34 @@ MW.createSystem(class App {
 MW.createSystem(class Ideas {
   constructor() {
     this.componentTag = 'Idealoader'
+
+    // bind
     this.loadIdeas = this.loadIdeas.bind(this)
   }
 
   init() {
-    const local = mw.state.Idealoader
+    const local = MW.state.Idealoader
     if (local) return local.star
     return { ideas: [] }
   }
 
   loadIdeas() {
-    const { ideas } = this.star
-
-    return ideas.map(idea => {
-      return (`
-        <article>
-          <h3>Title:</h3>
-          <h4>${idea.title}</h4>
-          <h3>Body:</h3>
-          <h4>${idea.body}</h4>
-        </article>
-      `)
-    }).join('')
+    return this.star.ideas.map(idea => `
+  <article>
+    <h3>Title:</h3>
+    <h4>${idea.title}</h4>
+    <h3>Body:</h3>
+    <h4>${idea.body}</h4>
+  </article>
+`).join('')
   }
 
   get template() {
-    const { Idealoader } = mw.state
+    const loadIdeas = MW.state.Idealoader.loadIdeas
 
     return (`
       <section>
-        ${Idealoader.loadIdeas()}
+        ${loadIdeas()}
       </section>
     `)
   }
