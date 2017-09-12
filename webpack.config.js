@@ -16,6 +16,8 @@ module.exports = function webpackStuff(env) {
     output: {
       filename: 'main.bundle.js',
       path: path.resolve(__dirname, './'),
+      library: "MilkyWay",
+      libraryTarget: 'umd',
     },
     module: {
       rules: [{
